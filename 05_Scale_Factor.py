@@ -54,7 +54,7 @@ def not_blank(question, error_msg, num_ok):
 
 # Main Routine...
 
-scale_Factor = float(input("Scale Factor: "))
+scale_Factor = eval(input("Scale Factor: "))
 
 # Set up empty ingredient list
 Ingredients = []
@@ -81,7 +81,15 @@ while stop != "xxx":
                                    "yes")
         amount = float(amount) * scale_Factor
 
+        if amount % 1 == 0:
+            amount = int(amount)
+        elif amount * 10 % 1 == 0:
+            amount = "{:.1f}".format(amount)
+        else:
+            amount = "{:.2f}".format(amount)
+
         Ingredients.append("{} units {}".format(amount, get_Ingredient))
 
 # Output list
-print(Ingredients)
+for item in Ingredients:
+    print(item)
