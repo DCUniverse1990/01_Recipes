@@ -4,7 +4,7 @@ import re
 
 # ***** Functions ******
 
-
+# make that it so there can not be blanks
 def not_blank(question, error_msg, num_ok):
     error = error_msg
 
@@ -29,7 +29,7 @@ def not_blank(question, error_msg, num_ok):
         else:
             return response
 
-
+# check that number is available
 def num_check(question):
 
     error = "please enter a number that is more than zero"
@@ -47,7 +47,7 @@ def num_check(question):
         except ValueError:
             print(error)
 
-
+# get scale factor
 def get_sf():
     serving_size = num_check("What is the recipe serving size? ")
 
@@ -72,106 +72,7 @@ def get_sf():
         else:
             return sf
 
-
-def general_converter(how_much, lookup, dictionary, conversion_factor ):
-
-    if lookup in dictionary:
-        mult_by = dictionary.get(lookup)
-        how_much = how_much * float(mult_by) / conversion_factor
-        converted = "yes"
-
-    else:
-        converted = "no"
-
-    return [how_much, converted]
-
-
-def unit_checker():
-
-    unit_tocheck = input("Unit? ")
-
-    teaspoon = ["tsp", "teaspoon", "t"]
-    tablespoon = ["tbs", "tablespoon", "T", "tbsp"]
-    ounce = ["oz", "ounce", "fl oz"]
-    cup = ["c", "cup"]
-    pint = ["p", "pt", "fl qt"]
-    quart = ["q", "qt", "fl qt"]
-    mls = ["ml", "milliliter"]
-    litre = ["litre", "liter", "l"]
-    pound = ["pound", "lb", "#"]
-
-    if unit_tocheck == "":
-        print("You chose {}".format(unit_tocheck))
-        return unit_tocheck
-
-    elif unit_tocheck == "T" or unit_tocheck.lower() in tablespoon:
-        return "tbs"
-    elif unit_tocheck.lower() in teaspoon:
-        return "tsp"
-    elif unit_tocheck.lower() in ounce:
-        return "ounce"
-    elif unit_tocheck.lower() in cup:
-        return "cup"
-    elif unit_tocheck.lower() in pint:
-        return "pint"
-    elif unit_tocheck.lower() in quart:
-        return "quart"
-    elif unit_tocheck.lower() in mls:
-        return "mL"
-    elif unit_tocheck.lower() in litre:
-        return "Litre"
-    elif unit_tocheck.lower() in pound:
-        return "pound"
-
-# ******* Main routine goes here *******
-unit_central = {
-    "tsp": 5,
-    "tbs": 15,
-    "cup": 237,
-    "ounce": 30,
-    "pint": 473,
-    "quart": 946,
-    "pound": 454,
-    "litre": 1000,
-    "ml": 1
-}
-
-groceries = open('01_ingredients_ml_to_g.csv')
-
-csv_groceries = csv.reader(groceries)
-
-food_dictionary = {}
-
-for row in csv_groceries:
-    food_dictionary[row[0]] = row [1]
-
-print(food_dictionary)
-
-keep_going = ""
-while keep_going == "":
-    amount = eval(input("How much? "))
-    amount = float(amount)
-
-    unit = unit_checker()
-    ingredient = input("Ingredient: ")
-
-    amount = general_converter(amount, unit, unit_central, 1)
-    print(amount)
-
-    if amount[1] == "yes":
-        amount_2 = general_converter(amount[0], ingredient, food_dictionary, 250)
-
-        if amount_2[1] == "yes":
-            print(amount_2)
-
-        else: print("unchanged")
-
-    else:
-        print("unchanged")
-
-    # keep_going = input("<enter> or q ")
-
-
+# ask user for ingredients
 def get_all_ingredients():
     all_ingredients = []
 
@@ -193,11 +94,10 @@ def get_all_ingredients():
         else:
             all_ingredients.append(get_recipe_line)
 
-        return all_ingredients
+    return all_ingredients
 
-# ***** Main Routine *****
+
 def general_converter(how_much, lookup, dictionary, conversion_factor ):
-
 
     if lookup in dictionary:
         mult_by = dictionary.get(lookup)
@@ -209,9 +109,8 @@ def general_converter(how_much, lookup, dictionary, conversion_factor ):
 
     return [how_much, converted]
 
-def unit_checker():
-
-    unit_tocheck = input("Unit? ")
+# check that unit is available
+def unit_checker(unit_tocheck):
 
     teaspoon = ["tsp", "teaspoon", "t"]
     tablespoon = ["tbs", "tablespoon", "T", "tbsp"]
@@ -222,7 +121,6 @@ def unit_checker():
     mls = ["ml", "milliliter"]
     litre = ["litre", "liter", "l"]
     pound = ["pound", "lb", "#"]
-    grams = ["g", "gram", "grams"]
 
     if unit_tocheck == "":
         print("You chose {}".format(unit_tocheck))
@@ -246,10 +144,12 @@ def unit_checker():
         return "Litre"
     elif unit_tocheck.lower() in pound:
         return "pound"
-    elif unit_tocheck.lower() in grams:
-        return "g"
 
 # ******* Main routine goes here *******
+
+# Set up Dictionaries
+
+#  ***** UNITS DICTIONARY *****
 unit_central = {
     "tsp": 5,
     "tbs": 15,
@@ -258,9 +158,12 @@ unit_central = {
     "pint": 473,
     "quart": 946,
     "pound": 454,
+    "litre": 1000,
     "ml": 1
 }
 
+
+#  ******  INGREDIENTS DICTIONARY *******
 groceries = open('01_ingredients_ml_to_g.csv')
 
 csv_groceries = csv.reader(groceries)
@@ -270,36 +173,42 @@ food_dictionary = {}
 for row in csv_groceries:
     food_dictionary[row[0]] = row [1]
 
-# print(food_dictionary)
-
-# set up Dictionaries
+print(food_dictionary)
 
 # set up list to hold 'modernised' ingredients
 moderniser_recipe = []
 
-# Ask user for recipe name and check its not blank
-source = not_blank("What is the recipe name? ",
+# *****  GET USER INPUT.... *****
+
+# Ask for recipe name and source
+recipe_name = not_blank("What is the recipe name? ",
                    "The recipe source can't be blank and cant contain numbers",
                    "no")
+
 # ask user where the recipe is originally from (numbers OK)
 source = not_blank("Where is the recipe from? ",
                    "The recipe source can't be blank",
                    "yes")
+
 # Get serving sizes and scale factor
 scale_factor = get_sf()
 
-# get amounts, units and ingredients from user...
+# Ask User for Ingredients
 full_recipe = get_all_ingredients()
 
 # Loop for each ingredient...
 mixed_regex = "\d{1,3}\s\d{1,3}\/\d{1,3}"
 
+new_line=""
+
 for recipe_line in full_recipe:
     recipe_line = recipe_line.strip()
     # Get amount...
+
+    # if amount is a mixed number, convert it to a decimal
     if re.match(mixed_regex, recipe_line):
 
-        # Get mixed number by matching the regex+
+        # Get mixed number by matching the regex
         pre_mix_num = re.match(mixed_regex, recipe_line)
         mixed_num = pre_mix_num.group()
 
@@ -315,11 +224,12 @@ for recipe_line in full_recipe:
         unit_ingredient = (unit_ingredient[1]).strip()
 
     else:
-        get_amount = recipe_line.split("", 1)
+        get_amount = recipe_line.split(" ", 1)
 
         try:
             amount = eval(get_amount[0])
             amount = amount * scale_factor
+
         except NameError:
             amount = get_amount[0]
             moderniser_recipe.append(recipe_line)
@@ -327,16 +237,19 @@ for recipe_line in full_recipe:
 
         unit_ingredient = get_amount[1]
 
-    get_unit = unit_ingredient.split("", 1)
+    get_unit = unit_ingredient.split(" ", 1)
     num_spaces = recipe_line.count(" ")
+
+    # print modernised recipe
     if num_spaces > 1:
         unit = get_unit[0]
         ingredient = get_unit[1]
         unit = unit_checker(unit)
 
         if unit == "g":
-            moderniser_recipe.append("{:.0f} g {}".format(amount, ingredient))
+            new_line = "{:.0f} g {}".format(amount, ingredient)
             continue
+
         amount = general_converter(amount, unit, unit_central, 1)
         if amount[1] == "yes":
             amount_2 = general_converter(amount[0], ingredient, food_dictionary, 250)
@@ -348,11 +261,11 @@ for recipe_line in full_recipe:
                 moderniser_recipe.append("{:.0f} g {}".format(amount_2[0], ingredient))
                 continue
 
-    else:
-        moderniser_recipe.append("{} {} {}".format(amount, unit_ingredient))
-        continue
-
-    moderniser_recipe.append("{} {} {}".format(amount, unit, ingredient))
+        else:
+            moderniser_recipe.append("{} {} {}".format(amount, unit_ingredient, ingredient))
+            continue
 
 for item in moderniser_recipe:
     print(item)
+
+
